@@ -47,7 +47,7 @@ redefining `process.emit` or anything crazy like that. No footguns here!
   - [Esm](#esm)
   - [Cjs](#cjs)
   - [CLI](#cli)
-- [Appendix 🏴](#appendix-)
+- [Appendix](#appendix)
   - [Inspiration](#inspiration)
   - [Published Package Details](#published-package-details)
   - [License](#license)
@@ -112,7 +112,7 @@ my-thing.js
 Specifying one or more warnings explicitly _and_ providing the environment
 variable will result in the two arrays being concatenated.
 
-## Appendix 🏴
+## Appendix
 
 Further documentation can be found under [`docs/`][x-repo-docs].
 
