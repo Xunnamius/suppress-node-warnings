@@ -1,6 +1,6 @@
 {
   "name": "suppress-node-warnings",
-  "version": "0.0.0-semantic",
+  "version": "1.0.0",
   "description": "Prevent select warnings (like ExperimentalWarning and DeprecationWarning) from causing Node to send warning text to stderr",
   "keywords": [
     "suppress",

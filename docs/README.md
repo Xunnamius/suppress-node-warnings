@@ -6,17 +6,23 @@ suppress-node-warnings
 
 ### Functions
 
-- [suppressNodeWarnings](README.md#suppressnodewarnings)
+- [suppressWarnings](README.md#suppresswarnings)
 
 ## Functions
 
-### suppressNodeWarnings
+### suppressWarnings
 
-▸ **suppressNodeWarnings**(`name`): `void`
+▸ **suppressWarnings**(`name?`): `void`
 
 Places a filter in front of all current `'warning'` event handlers attached
 to `globalThis.process`. This filter quietly swallows any warning events
 matching `name` while letting others pass through like normal.
+
+Also looks for a `NODE_SUPPRESS_WARNINGS` environment variable and parses its
+contents as comma-separated values that are trimmed and appended to the
+`name` array. For example:
+`NODE_SUPPRESS_WARNINGS=ExperimentalWarning,DeprecationWarning node
+my-thing.js`.
 
 **IMPORTANT: Imports that might generate warnings must occur _AFTER_ this
 function is executed. If warning suppression isn't working for you, it means
@@ -40,9 +46,9 @@ Note that this function does not rely on any horrifying hacks redefining
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `string` \| `string`[] |
+| Name | Type | Default value |
+| :------ | :------ | :------ |
+| `name` | `string` \| `string`[] | `[]` |
 
 #### Returns
 
@@ -56,4 +62,4 @@ Note that this function does not rely on any horrifying hacks redefining
 
 #### Defined in
 
-index.ts:30
+[index.ts:36](https://github.com/Xunnamius/suppress-node-warnings/blob/ef312a8/src/index.ts#L36)
