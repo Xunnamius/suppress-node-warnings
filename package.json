@@ -190,7 +190,7 @@
     "text-extensions": "^2.4.0",
     "tsconfig-replace-paths": "^0.0.14",
     "type-fest": "^4.9.0",
-    "typedoc": "^0.25.4",
+    "typedoc": "^0.25.6",
     "typedoc-plugin-markdown": "^3.17.1",
     "typescript": "^5.3.3",
     "unique-filename": "^3.0.0"
