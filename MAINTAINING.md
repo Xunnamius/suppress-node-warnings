@@ -97,14 +97,14 @@ npm run lint:all
 # 4. Build distributables.
 npm run build:dist
 
-# 5. Build auxiliary documentation.
-npm run build:docs
-
-# 6. Build any external executables (used in GitHub Actions workflows).
+# 5. Build any external executables (used in GitHub Actions workflows).
 npm run build:externals
 
-# 7. Format all files.
+# 6. Format all files.
 npm run format
+
+# 7. Build auxiliary documentation (AFTER format so line numbers are correct).
+npm run build:docs
 
 # 8. Run all possible tests and generate coverage information.
 npm run test:all
@@ -143,4 +143,4 @@ Thank you so much for helping to maintain this project!
 [9]: https://dev.to/paulinevos/atomic-commits-will-help-you-git-legit-35i7
 [10]: https://github.com/semantic-release/semantic-release
 [11]:
-  https://github.com/Xunnamius/suppress-node-warnings/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27
+  https://github.com/Xunnamius/black-flag/blob/eec78609146a92cab29caa9d1fa05a0581e5bd3f/release.config.js#L27

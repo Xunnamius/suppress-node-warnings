@@ -1,25 +1,14 @@
 {
-  "name": "suppress-node-warnings",
-  "version": "1.0.0",
-  "description": "Prevent select warnings (like ExperimentalWarning and DeprecationWarning) from causing Node to send warning text to stderr",
+  "name": "@-xun/ctl",
+  "version": "1.5.0",
+  "description": "The personal CLI of Xunnamius",
   "keywords": [
-    "suppress",
-    "warning",
-    "warnings",
-    "type",
-    "experimental",
-    "deprecation",
-    "no-warnings",
-    "disable",
-    "output",
-    "clear",
-    "silent",
-    "silence"
+    "Xunnamius"
   ],
-  "homepage": "https://github.com/Xunnamius/suppress-node-warnings",
+  "homepage": "https://github.com/Xunnamius/xunnctl",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Xunnamius/suppress-node-warnings"
+    "url": "https://github.com/Xunnamius/xunnctl"
   },
   "license": "MIT",
   "author": "Xunnamius",
@@ -27,8 +16,16 @@
   "type": "commonjs",
   "exports": {
     ".": {
-      "types": "./dist/src/index.d.ts",
-      "default": "./dist/src/index.js"
+      "types": "./dist/src/cli.d.ts",
+      "default": "./dist/src/cli.js"
+    },
+    "./commands/*": {
+      "types": "./dist/src/commands/*",
+      "default": "./dist/src/commands/*"
+    },
+    "./configure": {
+      "types": "./dist/src/configure.d.ts",
+      "default": "./dist/src/configure.js"
     },
     "./package": "./package.json",
     "./package.json": "./package.json"
@@ -36,12 +33,23 @@
   "typesVersions": {
     "*": {
       "index": [
-        "dist/src/index.d.ts"
+        "dist/src/cli.d.ts"
+      ],
+      "commands/*": [
+        "dist/src/commands/*"
+      ],
+      "configure": [
+        "dist/src/configure.d.ts"
       ],
       "package": [
         "package.json"
       ]
     }
+  },
+  "bin": {
+    "x": "./dist/src/cli.js",
+    "xctl": "./dist/src/cli.js",
+    "xunnctl": "./dist/src/cli.js"
   },
   "files": [
     "/dist",
@@ -54,7 +62,7 @@
     "__test:repeat:unit": "echo 'Repeating test suite [initializing]...'; (i=0; while [ \"$((( i += 1 ) <= 100 ))\" -ne 0 ]; do sleep 0.1 && echo \"\\r\\033[1A\\033[0KRepeating test suite [run $i/100]...\" && JEST_SILENT_REPORTER_SHOW_WARNINGS=true NODE_ENV=test npx jest --reporters=jest-silent-reporter --testPathIgnorePatterns '/(integration|e2e).*?\\.test\\.tsx?' '/dist/' || exit; done) && echo \"All tests passed! Congrats!\"",
     "build": "npm run build:dist --",
     "build:changelog": "conventional-changelog --outfile CHANGELOG.md --config ./conventional.config.js --release-count 0 --skip-unstable && (if [ \"$CHANGELOG_SKIP_TITLE\" != 'true' ]; then { node -e 'console.log(require(\"./conventional.config.js\").changelogTitle)'; cat CHANGELOG.md; } > CHANGELOG.md.ignore && mv CHANGELOG.md.ignore CHANGELOG.md; fi) && NODE_ENV=format remark --output --frail CHANGELOG.md && prettier --write CHANGELOG.md",
-    "build:dist": "echo '> Generating types...' && NODE_ENV=production tsc --project tsconfig.types.json --incremental false && tsconfig-replace-paths --project tsconfig.types.json && echo '> Building distributables...' && NODE_ENV=production-cjs babel src --extensions .ts --out-dir ./dist/src",
+    "build:dist": "echo '> Generating types...' && NODE_ENV=production tsc --project tsconfig.types.json --incremental false && tsconfig-replace-paths --project tsconfig.types.json && echo '> Building distributables...' && NODE_ENV=production-cjs babel src --extensions .ts --out-dir ./dist/src && NODE_ENV=production-cjs babel lib --extensions .ts --out-dir ./dist/lib && rm -rf ./dist/lib/run ./dist/lib/debug-extended/test && echo '> Adding new entry to node_modules/.bin and making it executable via chmod...' && ln -sf ./dist/src/cli.js node_modules/.bin/xunnctl && chmod +x ./dist/src/cli.js",
     "build:docs": "if [ -r ./next.config.js ]; then typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none lib src test types external-scripts --exclude '**/*.test.*' --exclude external-scripts/bin; else ENTRY=`node -e 'const entry = require(\"./package.json\").config?.[\"plugin-build\"]?.docs?.entry; if(!entry) throw new Error(\"\\\"config['\"'\"'plugin-build'\"'\"'].docs.entry\\\" field is not defined in package.json\"); console.log(entry)'` && echo 'Entry file:' $ENTRY && typedoc --plugin typedoc-plugin-markdown --skipErrorChecking --cleanOutputDir --tsconfig tsconfig.docs.json --out docs --readme none $ENTRY; fi",
     "build:externals": "NODE_ENV=production-external babel external-scripts --extensions .ts --out-dir external-scripts/bin",
     "clean": "git ls-files --exclude-standard --ignored --others --directory | grep -vE '^((\\.(env|vscode|husky))|next-env\\.d\\.ts|node_modules)($|\\/)' | xargs -p rm -rf",
@@ -62,7 +70,7 @@
     "lint": "stdbuf -i0 -o0 -e0 tsc --project tsconfig.lint.json; X=$?; stdbuf -i0 -o0 -e0 eslint --parser-options=project:tsconfig.lint.json --no-error-on-unmatched-pattern packages src; Y=$?; MD_FILES=$(node -e 'console.log(require(`glob-gitignore`).sync(`**/*.md`, { ignore: require(`fs`).readFileSync(`.prettierignore`, `utf8`).split(`\n`).filter(Boolean), dot: true }).join(`\n`))') && echo $MD_FILES | NODE_ENV=lint xargs remark --quiet --frail --no-stdout; Z=$?; [ $X -eq 0 ] && [ $Y -eq 0 ] && [ $Z -eq 0 ]",
     "lint:all": "stdbuf -i0 -o0 -e0 tsc --project tsconfig.eslint.json; X=$?; stdbuf -i0 -o0 -e0 eslint --parser-options=project:tsconfig.eslint.json .; Y=$?; MD_FILES=$(node -e 'console.log(require(`glob-gitignore`).sync(`**/*.md`, { ignore: require(`fs`).readFileSync(`.prettierignore`, `utf8`).split(`\n`).filter(Boolean), dot: true }).join(`\n`))') && echo $MD_FILES | NODE_ENV=lint xargs remark --quiet --frail --no-stdout; Z=$?; [ $X -eq 0 ] && [ $Y -eq 0 ] && [ $Z -eq 0 ]",
     "list-tasks": "node -e 'console.log(Object.keys(require(\"./package.json\").scripts).join(\"\\n\"))' && (npm run -ws list-tasks --if-present 2>/dev/null || true)",
-    "prepare": "node -e \"execa = require('execa'); if(process.env.CI === undefined && (process.env.NODE_ENV === undefined || process.env.NODE_ENV == 'development')) { execa.sync('npx', ['husky', 'install'], { stdout: 'inherit', stderr: 'inherit' }); } else { console.log('skipped installing husky git hooks'); }\"",
+    "prepare": "node -e \"execa = require('execa'); if(process.env.CI === undefined && (process.env.NODE_ENV === undefined || process.env.NODE_ENV === 'development')) { execa.sync('npx', ['husky', 'install'], { stdout: 'inherit', stderr: 'inherit' }); } else { console.log('skipped installing husky git hooks'); }\"",
     "test": "npm run test:unit --",
     "test:all": "npx attw --pack . && NODE_ENV=test jest --coverage",
     "test:e2e": "NODE_ENV=test jest 'e2e.*?\\.test\\.tsx?' --testPathIgnorePatterns '/dist/'",
@@ -78,33 +86,45 @@
   "config": {
     "plugin-build": {
       "docs": {
-        "entry": "./src/index.ts"
+        "entry": "./src/*"
       }
     }
   },
   "dependencies": {
-    "core-js": "^3.35.0"
+    "@black-flag/core": "^1.2.4",
+    "@listr2/manager": "^2.0.2",
+    "@types/debug": "^4.1.12",
+    "core-js": "3.36.1",
+    "debug": "^4.3.4",
+    "env-paths": "^3.0.0",
+    "get-stdin": "^9.0.0",
+    "ip6addr": "^0.2.5",
+    "jmespath": "^0.16.0",
+    "listr2": "^8.0.2",
+    "merge-descriptors": "^2.0.0",
+    "supports-color": "^8.1.1"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.13.5",
-    "@babel/cli": "^7.23.4",
-    "@babel/eslint-parser": "^7.23.3",
-    "@babel/plugin-proposal-export-default-from": "^7.23.3",
-    "@babel/preset-env": "^7.23.7",
-    "@babel/preset-typescript": "^7.23.3",
-    "@commitlint/cli": "^18.4.3",
-    "@commitlint/config-conventional": "^18.4.3",
+    "@arethetypeswrong/cli": "^0.15.2",
+    "@babel/cli": "^7.24.1",
+    "@babel/eslint-parser": "^7.24.1",
+    "@babel/plugin-proposal-export-default-from": "^7.24.1",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-typescript": "^7.24.1",
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
-    "@types/debug": "^4.1.12",
     "@types/glob": "^8.1.0",
-    "@types/jest": "^29.5.11",
+    "@types/ip6addr": "^0.2.6",
+    "@types/jest": "^29.5.12",
+    "@types/jmespath": "^0.15.2",
     "@types/lodash.mergewith": "^4.6.9",
     "@types/merge-descriptors": "^1.0.3",
-    "@types/node": "^20.10.6",
-    "@typescript-eslint/eslint-plugin": "^6.16.0",
-    "@typescript-eslint/parser": "^6.16.0",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
     "@xunnamius/conventional-changelog-projector": "^1.2.1",
     "@xunnamius/jest-types": "^1.1.3",
     "all-contributors-cli": "^6.26.1",
@@ -112,29 +132,28 @@
     "babel-plugin-explicit-exports-references": "^1.0.2",
     "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-transform-rewrite-imports": "^1.2.0",
+    "confusing-browser-globals": "^1.0.11",
     "conventional-changelog-cli": "^4.1.0",
-    "debug": "^4.3.4",
     "doctoc": "^2.2.1",
-    "dotenv": "^16.3.1",
-    "eslint": "^8.56.0",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-babel-module": "^5.3.2",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-import": "^2.29.1",
-    "eslint-plugin-jest": "^27.6.0",
+    "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-module-resolver": "^1.5.0",
-    "eslint-plugin-unicorn": "^50.0.1",
+    "eslint-plugin-unicorn": "^51.0.1",
     "execa": "^5.1.1",
     "glob": "^10.3.10",
     "glob-gitignore": "^1.0.14",
-    "husky": "^8.0.3",
+    "husky": "^9.0.11",
     "jest": "^29.7.0",
     "jest-circus": "^29.7.0",
     "jest-extended": "^4.0.2",
-    "lint-staged": "^15.2.0",
+    "lint-staged": "^15.2.2",
     "lodash.mergewith": "^4.6.2",
-    "merge-descriptors": "^2.0.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.2.5",
     "remark-capitalize-headings": "^2.0.1",
     "remark-cli": "^12.0.0",
     "remark-frontmatter": "^5.0.0",
@@ -184,19 +203,19 @@
     "remark-tight-comments": "^2.0.0",
     "remark-validate-links": "^13.0.0",
     "semantic-release": "https://xunn.at/semantic-release-atam@22.0.7",
-    "semver": "^7.5.4",
-    "sort-package-json": "https://xunn.at/sort-package-json@2.3.0",
+    "semver": "^7.6.0",
+    "sort-package-json": "^2.10.0",
     "spellchecker": "^3.7.1",
     "text-extensions": "^2.4.0",
     "tsconfig-replace-paths": "^0.0.14",
-    "type-fest": "^4.9.0",
-    "typedoc": "^0.25.4",
+    "type-fest": "^4.14.0",
+    "typedoc": "^0.25.12",
     "typedoc-plugin-markdown": "^3.17.1",
-    "typescript": "^5.3.3",
+    "typescript": "^5.4.3",
     "unique-filename": "^3.0.0"
   },
   "engines": {
-    "node": "^18.16.0 || >=20.4.0"
+    "node": "^20.10.0 || >=21.3.0"
   },
   "publishConfig": {
     "access": "public"
