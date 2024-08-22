@@ -1,23 +1,17 @@
 <!-- badges-start -->
 
-<div align="center">
-
-[![Black Lives Matter!][x-badge-blm-image]][x-badge-blm-link]
-[![Last commit timestamp][x-badge-lastcommit-image]][x-badge-repo-link]
-[![Codecov][x-badge-codecov-image]][x-badge-codecov-link]
-[![Source license][x-badge-license-image]][x-badge-license-link]
-[![Uses Semantic Release!][x-badge-semanticrelease-image]][x-badge-semanticrelease-link]
-
-[![NPM version][x-badge-npm-image]][x-badge-npm-link]
-[![Monthly Downloads][x-badge-downloads-image]][x-badge-npm-link]
-
-</div>
+[![Black Lives Matter!][badge-blm]][link-blm]
+[![!!UNMAINTAINED!!][badge-unmaintained]][link-unmaintained]
 
 <!-- badges-end -->
 
-<br />
+# ⛔️ DEPRECATED/UNMAINTAINED
 
-# suppress-node-warnings
+> [!CAUTION]
+>
+> This project is no longer necessary. Node has supported suppressing warnings
+> natively
+> [for a while now](https://nodejs.org/en/blog/release/v21.3.0#new---disable-warning-flag).
 
 Use this package to prevent certain pesky warnings (e.g. `ExperimentalWarning`,
 `DeprecationWarning`) from causing Node to add noise to generated output, which
@@ -215,8 +209,12 @@ key][x-repo-all-contributors-emojis]):
 This project follows the [all-contributors][x-repo-all-contributors]
 specification. Contributions of any kind welcome!
 
-[x-badge-blm-image]: https://xunn.at/badge-blm 'Join the movement!'
-[x-badge-blm-link]: https://xunn.at/donate-blm
+[badge-blm]: https://xunn.at/badge-blm 'Join the movement!'
+[link-blm]: https://xunn.at/donate-blm
+[badge-unmaintained]:
+  https://xunn.at/badge-unmaintained
+  'Unfortunately, this project is unmaintained (forks welcome!)'
+[link-unmaintained]: https://xunn.at/link-unmaintained
 [x-badge-codecov-image]:
   https://img.shields.io/codecov/c/github/Xunnamius/suppress-node-warnings/main?style=flat-square&token=HWRIOBAAPW
   'Is this package well-tested?'
